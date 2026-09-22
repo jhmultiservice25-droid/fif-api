@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { assertCampaignOpen } from "../campaign";
 import { PrismaService } from "../prisma/prisma.service";
 import { MarketplaceListQueryDto } from "../organizations/organizations.dto";
 import { PatchInnovatorProfileDto, UpsertProjectDto } from "./innovators.dto";
@@ -38,6 +39,9 @@ export class InnovatorsService {
   }
 
   async createProject(userId: string, body: UpsertProjectDto) {
+    if (body.status === "SUBMITTED") {
+      throw new BadRequestException("Enregistrez d’abord la solution et ajoutez la vidéo de présentation obligatoire avant de soumettre.");
+    }
     const innovator = await this.profile(userId);
     return this.prisma.innovatorProject.create({
       data: {
@@ -66,10 +70,28 @@ export class InnovatorsService {
   }
 
   async patchProject(userId: string, id: string, body: UpsertProjectDto) {
-    await this.getProject(userId, id);
+    const project = await this.getProject(userId, id);
+    if (body.status === "SUBMITTED") {
+      assertCampaignOpen("innovation");
+      if (!project.pitchVideoPath) {
+        throw new BadRequestException("Ajoutez obligatoirement votre vidéo de présentation de 2 minutes avant de soumettre la candidature.");
+      }
+    }
     return this.prisma.innovatorProject.update({
       where: { id },
       data: body,
+    });
+  }
+
+
+  async attachPitchVideo(userId: string, id: string, path: string, originalName: string) {
+    const project = await this.getProject(userId, id);
+    if (project.status === "SUBMITTED") {
+      throw new BadRequestException("Une solution déjà soumise ne peut plus remplacer sa vidéo.");
+    }
+    return this.prisma.innovatorProject.update({
+      where: { id },
+      data: { pitchVideoPath: path, pitchVideoOriginalName: originalName },
     });
   }
 
