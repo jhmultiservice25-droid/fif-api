@@ -3,6 +3,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { randomUUID } from "node:crypto";
 import { extname, join } from "node:path";
+import { unlink } from "node:fs/promises";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import type { Request } from "express";
 import { InnovatorAuth } from "../auth/admin-auth";
@@ -78,6 +79,11 @@ export class InnovatorsController {
   ) {
     assertCampaignOpen("innovation");
     if (!file) throw new BadRequestException("La vidéo de présentation est obligatoire.");
+    const duration = Number(request.headers["x-video-duration-seconds"]);
+    if (!Number.isFinite(duration) || duration <= 0 || duration > 120) {
+      void unlink(join(uploadDir, file.filename)).catch(() => undefined);
+      throw new BadRequestException("La vidéo doit durer 2 minutes maximum.");
+    }
     return this.innovators.attachPitchVideo(
       request.user.id,
       id,
