@@ -1,6 +1,6 @@
 import { BadRequestException } from "@nestjs/common";
 
-type CampaignId = "committee" | "volunteer";
+type CampaignId = "committee" | "volunteer" | "innovation" | "badge";
 
 const CAMPAIGNS: Record<CampaignId, { openAt: string; closeAt: string }> = {
   committee: {
@@ -10,6 +10,14 @@ const CAMPAIGNS: Record<CampaignId, { openAt: string; closeAt: string }> = {
   volunteer: {
     openAt: "2026-09-08T00:00:00+01:00",
     closeAt: "2026-09-17T23:59:59+01:00",
+  },
+  innovation: {
+    openAt: "2026-09-22T00:00:00+01:00",
+    closeAt: "2026-10-25T23:59:59+01:00",
+  },
+  badge: {
+    openAt: "2026-09-22T00:00:00+01:00",
+    closeAt: "2026-11-20T23:59:59+01:00",
   },
 };
 
