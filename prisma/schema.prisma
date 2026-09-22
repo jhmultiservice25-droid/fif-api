@@ -1,0 +1,289 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   String                @id
+  name                 String
+  email                String
+  emailVerified        Boolean
+  image                String?
+  role                 String                @default("USER")
+  createdAt            DateTime
+  updatedAt            DateTime
+  sessions             Session[]
+  accounts             Account[]
+  organizationProfile  OrganizationProfile?
+  innovatorProfile     InnovatorProfile?
+  notifications        UserNotification[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  issuer                String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@unique([issuer, accountId])
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model Pole {
+  id          String @id
+  slug        String @unique
+  name        String
+  shortName   String
+  description String
+  order       Int
+  jobs        Job[]
+}
+
+model Job {
+  id                 String                   @id
+  slug               String                   @unique
+  title              String
+  roleKind           String
+  mission            String
+  responsibilities   String[]
+  profile            String[]
+  headcount          Int
+  poleId             String
+  pole               Pole                     @relation(fields: [poleId], references: [id])
+  primaryApplications CommitteeApplication[]  @relation("PrimaryJob")
+  secondaryApplications CommitteeApplication[] @relation("SecondaryJob")
+}
+
+model CommitteeApplication {
+  id                    String   @id @default(cuid())
+  lastName              String
+  postnom               String
+  firstName             String
+  sex                   String
+  birthDate             DateTime
+  city                  String
+  whatsapp              String
+  email                 String
+  primaryJobId          String
+  primaryJob            Job      @relation("PrimaryJob", fields: [primaryJobId], references: [id])
+  secondaryJobId        String?
+  secondaryJob          Job?     @relation("SecondaryJob", fields: [secondaryJobId], references: [id])
+  educationLevel        String
+  fieldOfStudy          String
+  professionalSituation String
+  yearsOfExperience     Int
+  motivation            String
+  experience            String
+  availability          String
+  linkedin              String?
+  cvPath                String
+  status                String   @default("RECEIVED")
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([status])
+  @@index([email])
+  @@index([primaryJobId])
+}
+
+model VolunteerApplication {
+  id               String   @id @default(cuid())
+  lastName         String
+  postnom          String
+  firstName        String
+  sex              String
+  birthDate        DateTime
+  city             String
+  whatsapp         String
+  email            String
+  organization     String?
+  educationLevel   String
+  fieldOfStudy     String
+  primaryTeamId    String
+  secondaryTeamId  String?
+  skills           String?
+  eventExperience  String?
+  languages        String
+  availability     String
+  motivation       String
+  status           String   @default("RECEIVED")
+  assignmentTeamId String?
+  assignmentZone   String?
+  assignmentLead   String?
+  assignmentShift  String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([status])
+  @@index([email])
+  @@index([primaryTeamId])
+}
+
+model StaffNotification {
+  id        String    @id @default(cuid())
+  type      String
+  title     String
+  body      String
+  href      String?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([readAt, createdAt])
+  @@map("staff_notification")
+}
+
+model OrganizationProfile {
+  id                 String             @id @default(cuid())
+  userId             String             @unique
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name               String             @default("")
+  type               String             @default("")
+  sector             String             @default("")
+  city               String             @default("")
+  contactName        String             @default("")
+  contactTitle       String             @default("")
+  phone              String             @default("")
+  professionalEmail  String             @default("")
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  needs              OrganizationNeed[]
+}
+
+model OrganizationNeed {
+  id                  String              @id @default(cuid())
+  organizationId      String
+  organization        OrganizationProfile @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  status              String              @default("DRAFT")
+  priorityChallenge   String              @default("")
+  problemDomains      String[]
+  solutionTypes       String[]
+  priority            String              @default("")
+  timeline            String              @default("")
+  pilotWillingness    String              @default("")
+  budgetBand          String              @default("")
+  publicationConsent  String              @default("DISCUSS")
+  fikiriChallenge     String              @default("A_DISCUTER")
+  payload             Json                @default("{}")
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  matches             Match[]
+
+  @@index([organizationId])
+  @@index([status])
+  @@index([publicationConsent])
+}
+
+model InnovatorProfile {
+  id           String             @id @default(cuid())
+  userId       String             @unique
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName  String             @default("")
+  organization String             @default("")
+  city         String             @default("")
+  phone        String             @default("")
+  email        String             @default("")
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  projects     InnovatorProject[]
+}
+
+model InnovatorProject {
+  id                  String           @id @default(cuid())
+  innovatorId         String
+  innovator           InnovatorProfile @relation(fields: [innovatorId], references: [id], onDelete: Cascade)
+  status              String           @default("DRAFT")
+  title               String           @default("")
+  problemSolved       String           @default("")
+  solution            String           @default("")
+  sectors             String[]
+  capabilities        String[]
+  stage               String           @default("")
+  publicationConsent  String           @default("DISCUSS")
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  matches             Match[]
+
+  @@index([innovatorId])
+  @@index([status])
+  @@index([publicationConsent])
+}
+
+model Match {
+  id          String            @id @default(cuid())
+  needId      String
+  need        OrganizationNeed  @relation(fields: [needId], references: [id], onDelete: Cascade)
+  projectId   String
+  project     InnovatorProject  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  score       Int
+  rationale   String
+  model       String
+  computedAt  DateTime          @default(now())
+  notifiedAt  DateTime?
+
+  @@unique([needId, projectId])
+  @@index([needId])
+  @@index([projectId])
+  @@index([score])
+}
+
+model UserNotification {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  body      String
+  href      String?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, readAt, createdAt])
+  @@map("user_notification")
+}
