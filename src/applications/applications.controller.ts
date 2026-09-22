@@ -128,6 +128,14 @@ export class ApplicationsController {
   }
 
 
+
+  @Get("applications/participant/:id/verify")
+  @ApiTags("Inscriptions")
+  @ApiOperation({ summary: "Vérifier l’authenticité d’un badge participant FIF 2026" })
+  verifyParticipantBadge(@Param("id") id: string) {
+    return this.applications.verifyParticipantBadge(id);
+  }
+
   @Post("applications/participant/:id/badge")
   @ApiTags("Inscriptions")
   @ApiOperation({ summary: "Autoriser la génération du badge participant jusqu’au 20 novembre 2026 à 23h59" })
