@@ -40,6 +40,7 @@ import {
   ApplicationListPage,
   CommitteeApplicationDetail,
   CommitteeApplicationRecord,
+  ParticipantRegistrationRecord,
   VolunteerApplicationDetail,
   VolunteerApplicationRecord,
 } from "../http/models";
@@ -47,6 +48,7 @@ import { ApplicationsService } from "./applications.service";
 import {
   CommitteeApplicationDto,
   ListQueryDto,
+  ParticipantRegistrationDto,
   PatchApplicationDto,
   VolunteerApplicationDto,
 } from "./dto";
@@ -108,6 +110,15 @@ export class ApplicationsController {
       throw new BadRequestException("Le CV PDF est obligatoire.");
     }
     return this.applications.createCommittee(body, join(uploadDir, file.filename));
+  }
+
+  @Post("applications/participant")
+  @ApiTags("Inscriptions")
+  @ApiOperation({ summary: "Enregistrer la participation au FIF 2026" })
+  @ApiBody({ type: ParticipantRegistrationDto })
+  @ApiCreatedData(ParticipantRegistrationRecord, "Inscription participant enregistrée.")
+  createParticipant(@Body() body: ParticipantRegistrationDto) {
+    return this.applications.createParticipant(body);
   }
 
   @Post("applications/volunteer")
