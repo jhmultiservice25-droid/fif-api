@@ -122,6 +122,22 @@ export class ApplicationsService {
     });
   }
 
+
+  async getParticipantForBadge(id: string) {
+    const participant = await this.prisma.participantRegistration.findUnique({ where: { id } });
+    if (!participant) {
+      throw new NotFoundException("Inscription participant introuvable.");
+    }
+    return {
+      id: participant.id,
+      fullName: fullName(participant.lastName, participant.postnom, participant.firstName),
+      organization: participant.organization,
+      selectedDays: participant.selectedDays,
+      selectedActivities: participant.selectedActivities,
+      badgeEligible: true,
+    };
+  }
+
   async createVolunteer(dto: VolunteerApplicationDto) {
     assertCampaignOpen("volunteer");
     if (countWords(dto.motivation) > VOLUNTEER_MOTIVATION_MAX_WORDS) {
