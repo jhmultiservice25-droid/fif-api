@@ -1,6 +1,7 @@
 import {
   COMMITTEE_STATUS_LABELS,
   COMMITTEE_STATUSES,
+  PARTICIPANT_ACTIVITIES,
   VOLUNTEER_MOTIVATION_MAX_WORDS,
   VOLUNTEER_STATUS_LABELS,
   VOLUNTEER_STATUSES,
@@ -21,6 +22,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import {
   CommitteeApplicationDto,
   ListQueryDto,
+  ParticipantRegistrationDto,
   PatchApplicationDto,
   VolunteerApplicationDto,
 } from "./dto";
@@ -79,6 +81,45 @@ export class ApplicationsService {
       choice: primary.title,
     });
     return withoutCvPath(row);
+  }
+
+  async createParticipant(dto: ParticipantRegistrationDto) {
+    const selectedDays = new Set(dto.selectedDays);
+
+    for (const dayId of selectedDays) {
+      const hasActivity = dto.selectedActivities.some(
+        (activityId) =>
+          PARTICIPANT_ACTIVITIES.find((activity) => activity.id === activityId)?.dayId === dayId,
+      );
+      if (!hasActivity) {
+        throw new BadRequestException(
+          "Sélectionnez au moins une activité pour chaque jour choisi.",
+        );
+      }
+    }
+
+    for (const activityId of dto.selectedActivities) {
+      const activity = PARTICIPANT_ACTIVITIES.find((item) => item.id === activityId);
+      if (!activity || !selectedDays.has(activity.dayId)) {
+        throw new BadRequestException(
+          "Chaque activité doit appartenir à un jour sélectionné.",
+        );
+      }
+    }
+
+    return this.prisma.participantRegistration.create({
+      data: {
+        lastName: dto.lastName,
+        postnom: dto.postnom,
+        firstName: dto.firstName,
+        city: dto.city,
+        whatsapp: dto.whatsapp,
+        email: dto.email,
+        organization: dto.organization || null,
+        selectedDays: dto.selectedDays,
+        selectedActivities: dto.selectedActivities,
+      },
+    });
   }
 
   async createVolunteer(dto: VolunteerApplicationDto) {
