@@ -57,7 +57,12 @@ const uploadDir = process.env.UPLOAD_DIR ?? "./data/uploads";
 
 @Controller()
 @ApiStandardErrors()
-@ApiExtraModels(CommitteeApplicationDto, VolunteerApplicationDto, PatchApplicationDto)
+@ApiExtraModels(
+  CommitteeApplicationDto,
+  VolunteerApplicationDto,
+  ParticipantRegistrationDto,
+  PatchApplicationDto,
+)
 export class ApplicationsController {
   constructor(private readonly applications: ApplicationsService) {}
 
