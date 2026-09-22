@@ -123,6 +123,21 @@ export class ApplicationsService {
   }
 
 
+
+  async verifyParticipantBadge(id: string) {
+    const participant = await this.prisma.participantRegistration.findUnique({ where: { id } });
+    if (!participant) {
+      throw new NotFoundException("Badge participant invalide.");
+    }
+    return {
+      valid: true,
+      id: participant.id,
+      fullName: fullName(participant.lastName, participant.postnom, participant.firstName),
+      organization: participant.organization,
+      selectedDays: participant.selectedDays,
+    };
+  }
+
   async getParticipantForBadge(id: string) {
     const participant = await this.prisma.participantRegistration.findUnique({ where: { id } });
     if (!participant) {
