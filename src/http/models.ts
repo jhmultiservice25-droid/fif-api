@@ -6,6 +6,7 @@ import {
 import type {
   CommitteeApplication,
   Job,
+  ParticipantRegistration,
   Pole,
   StaffNotification,
   VolunteerApplication,
@@ -450,6 +451,41 @@ export class CommitteeApplicationRecord implements CommitteeApplicationResponse 
   updatedAt: string;
 }
 
+export class ParticipantRegistrationRecord implements ParticipantRegistration {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  lastName: string;
+
+  @ApiProperty()
+  postnom: string;
+
+  @ApiProperty()
+  firstName: string;
+
+  @ApiProperty()
+  city: string;
+
+  @ApiProperty()
+  whatsapp: string;
+
+  @ApiProperty()
+  email: string;
+
+  @ApiPropertyOptional({ nullable: true, type: String })
+  organization: string | null;
+
+  @ApiProperty({ type: [String], example: ["2026-11-25", "2026-11-26"] })
+  selectedDays: string[];
+
+  @ApiProperty({ type: [String], example: ["d1-ouverture", "d2-academy"] })
+  selectedActivities: string[];
+
+  @ApiProperty({ type: String, format: "date-time" })
+  createdAt: Date;
+}
+
 type VolunteerApplicationResponse = Omit<
   VolunteerApplication,
   "birthDate" | "createdAt" | "updatedAt"
@@ -719,6 +755,7 @@ export const OPENAPI_MODELS = [
   PoleWithJobsResponse,
   CommitteeApplicationRecord,
   VolunteerApplicationRecord,
+  ParticipantRegistrationRecord,
   CommitteeApplicationDetail,
   VolunteerApplicationDetail,
   ApplicationListItemResponse,

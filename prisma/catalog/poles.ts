@@ -7,7 +7,7 @@ export const POLES = [
     name: "Coordination",
     shortName: "Coordination",
     description:
-      "Coordonnateur général adjoint / Event Manager. Pilotage transversal du Festival, alignement des pôles et tenue du calendrier.",
+      "Coordonnateur général FIF, Coordonnateur général adjoint / Event Manager et responsables de zones. Pilotage transversal du Festival, alignement des pôles et tenue du calendrier.",
     order: 0,
   },
   {
@@ -16,7 +16,7 @@ export const POLES = [
     name: "Pôle 1 — Programme & Contenu",
     shortName: "Programme & Contenu",
     description:
-      "Conception du programme, speakers, FIKIRI Talks, Academy, challenges et cohérence éditoriale des deux jours.",
+      "Conception du programme, speakers, FIKIRI Talks, Academy, challenges et cohérence éditoriale des trois jours.",
     order: 1,
   },
   {
@@ -52,7 +52,7 @@ export const POLES = [
     name: "Pôle 5 — Communication & Médias",
     shortName: "Communication & Médias",
     description:
-      "Récit public du Festival, médias, réseaux sociaux, FIKIRI Studio et couverture des deux jours.",
+      "Récit public du Festival, médias, réseaux sociaux, FIKIRI Studio et couverture des trois jours.",
     order: 5,
   },
   {

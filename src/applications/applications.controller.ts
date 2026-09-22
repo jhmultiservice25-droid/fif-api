@@ -40,13 +40,16 @@ import {
   ApplicationListPage,
   CommitteeApplicationDetail,
   CommitteeApplicationRecord,
+  ParticipantRegistrationRecord,
   VolunteerApplicationDetail,
   VolunteerApplicationRecord,
 } from "../http/models";
 import { ApplicationsService } from "./applications.service";
+import { assertCampaignOpen } from "../campaign";
 import {
   CommitteeApplicationDto,
   ListQueryDto,
+  ParticipantRegistrationDto,
   PatchApplicationDto,
   VolunteerApplicationDto,
 } from "./dto";
@@ -55,7 +58,12 @@ const uploadDir = process.env.UPLOAD_DIR ?? "./data/uploads";
 
 @Controller()
 @ApiStandardErrors()
-@ApiExtraModels(CommitteeApplicationDto, VolunteerApplicationDto, PatchApplicationDto)
+@ApiExtraModels(
+  CommitteeApplicationDto,
+  VolunteerApplicationDto,
+  ParticipantRegistrationDto,
+  PatchApplicationDto,
+)
 export class ApplicationsController {
   constructor(private readonly applications: ApplicationsService) {}
 
@@ -108,6 +116,32 @@ export class ApplicationsController {
       throw new BadRequestException("Le CV PDF est obligatoire.");
     }
     return this.applications.createCommittee(body, join(uploadDir, file.filename));
+  }
+
+  @Post("applications/participant")
+  @ApiTags("Inscriptions")
+  @ApiOperation({ summary: "Enregistrer la participation au FIF 2026" })
+  @ApiBody({ type: ParticipantRegistrationDto })
+  @ApiCreatedData(ParticipantRegistrationRecord, "Inscription participant enregistrée.")
+  createParticipant(@Body() body: ParticipantRegistrationDto) {
+    return this.applications.createParticipant(body);
+  }
+
+
+
+  @Get("applications/participant/:id/verify")
+  @ApiTags("Inscriptions")
+  @ApiOperation({ summary: "Vérifier l’authenticité d’un badge participant FIF 2026" })
+  verifyParticipantBadge(@Param("id") id: string) {
+    return this.applications.verifyParticipantBadge(id);
+  }
+
+  @Post("applications/participant/:id/badge")
+  @ApiTags("Inscriptions")
+  @ApiOperation({ summary: "Autoriser la génération du badge participant jusqu’au 20 novembre 2026 à 23h59" })
+  generateParticipantBadge(@Param("id") id: string) {
+    assertCampaignOpen("badge");
+    return this.applications.getParticipantForBadge(id);
   }
 
   @Post("applications/volunteer")

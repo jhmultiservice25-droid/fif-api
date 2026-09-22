@@ -2,6 +2,27 @@ import type { Job } from "@prisma/client";
 
 export const JOBS = [
   {
+    id: "coordonnateur-general",
+    slug: "coordonnateur-general",
+    title: "Coordonnateur général FIF",
+    poleId: "coordination",
+    roleKind: "LEAD",
+    headcount: 1,
+    mission:
+      "Assurer le leadership général du FIKIRI Innovation Festival 2026, arbitrer les priorités, représenter le Comité et rendre compte au Comité de pilotage.",
+    responsibilities: [
+      "Piloter l’ensemble du Comité d’organisation et garantir l’alignement des pôles.",
+      "Arbitrer les décisions transversales, risques et blocages critiques.",
+      "Représenter le Festival auprès des partenaires, autorités et parties prenantes.",
+      "Superviser l’exécution du Festival du 25 au 27 novembre 2026 et le suivi post-FIF.",
+    ],
+    profile: [
+      "Leadership confirmé en coordination de projets complexes ou d’événements.",
+      "Capacité d’arbitrage, de représentation institutionnelle et de gestion multi-équipes.",
+      "Forte disponibilité jusqu’à la clôture opérationnelle du FIF 2026.",
+    ],
+  },
+  {
     id: "adjoint-coordination",
     slug: "adjoint-coordination",
     title: "Coordonnateur général adjoint / Event Manager",
@@ -9,7 +30,7 @@ export const JOBS = [
     roleKind: "LEAD",
     headcount: 1,
     mission:
-      "Appuyer le Coordonnateur général dans le pilotage opérationnel du Festival, l’alignement des pôles et la tenue du calendrier jusqu’aux 13–15 octobre 2026.",
+      "Appuyer le Coordonnateur général dans le pilotage opérationnel du Festival, l’alignement des pôles et la tenue du calendrier jusqu’au Festival du 25 au 27 novembre 2026.",
     responsibilities: [
       "Tenir le calendrier maître et les points de coordination inter-pôles.",
       "Anticiper les blocages, arbitrer les priorités et relayer les décisions.",
@@ -19,7 +40,7 @@ export const JOBS = [
     profile: [
       "Expérience confirmée en coordination d’événements ou de projets multi-équipes.",
       "Capacité de décision, rigueur et aisance relationnelle.",
-      "Disponibilité intensive de septembre à mi-octobre 2026.",
+      "Disponibilité intensive de septembre à fin novembre 2026.",
     ],
   },
   {
@@ -42,6 +63,26 @@ export const JOBS = [
     ],
   },
   {
+    id: "responsable-zone-operationnelle",
+    slug: "responsable-zone-operationnelle",
+    title: "Responsable de zone opérationnelle",
+    poleId: "coordination",
+    roleKind: "DEPUTY",
+    headcount: 20,
+    mission:
+      "Encadrer une zone opérationnelle du Festival — scène, salles, Village, B2B, accueil, VIP ou autre espace affecté — et servir de relais terrain de la Coordination.",
+    responsibilities: [
+      "Préparer la zone attribuée et appliquer les check-lists opérationnelles.",
+      "Coordonner les équipes et volontaires affectés à la zone.",
+      "Faire remonter immédiatement incidents, besoins et arbitrages à la Coordination.",
+      "Assurer la continuité du service pendant les trois jours du Festival.",
+    ],
+    profile: [
+      "Expérience terrain en événementiel, opérations, accueil ou coordination d’équipe.",
+      "Réactivité, sens du service, ponctualité et capacité à travailler sous pression.",
+    ],
+  },
+  {
     id: "responsable-programme",
     slug: "responsable-programme",
     title: "Responsable Programme & Contenu",
@@ -49,7 +90,7 @@ export const JOBS = [
     roleKind: "LEAD",
     headcount: 1,
     mission:
-      "Concevoir et livrer le programme des 14 et 15 octobre : plénières, FIKIRI Talks, Academy, challenges, Demo Show et Grand Pitch.",
+      "Concevoir et livrer le programme des 25, 26 et 27 novembre : plénières, FIKIRI Talks, Academy, challenges, Demo Show et Grand Pitch.",
     responsibilities: [
       "Construire la grille horaire et la cohérence éditoriale.",
       "Recruter et briefer les speakers, formateurs et jurys.",
@@ -113,7 +154,7 @@ export const JOBS = [
       "Recruter et qualifier les exposants.",
       "Concevoir le plan du Village et les parcours de visite.",
       "Superviser l’installation des stands et des démos.",
-      "Assurer l’expérience exposants pendant les deux jours.",
+      "Assurer l’expérience exposants pendant les trois jours.",
     ],
     profile: [
       "Expérience salons, foires, community ou business development.",
