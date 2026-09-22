@@ -166,6 +166,23 @@ model VolunteerApplication {
   @@index([primaryTeamId])
 }
 
+model ParticipantRegistration {
+  id                 String   @id @default(cuid())
+  lastName           String
+  postnom            String
+  firstName          String
+  city               String
+  whatsapp           String
+  email              String
+  organization       String?
+  selectedDays       String[]
+  selectedActivities String[]
+  createdAt          DateTime @default(now())
+
+  @@index([email])
+  @@index([createdAt])
+}
+
 model StaffNotification {
   id        String    @id @default(cuid())
   type      String
