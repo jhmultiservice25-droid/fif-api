@@ -71,6 +71,38 @@ export const VOLUNTEER_TEAMS = [
   { id: "logistique", name: "Logistique & Operations" },
 ] as const;
 
+export const PARTICIPANT_DAYS = [
+  "2026-11-25",
+  "2026-11-26",
+  "2026-11-27",
+] as const;
+
+export const PARTICIPANT_ACTIVITIES = [
+  { id: "d1-accueil-experience", dayId: "2026-11-25" },
+  { id: "d1-ouverture", dayId: "2026-11-25" },
+  { id: "d1-talks", dayId: "2026-11-25" },
+  { id: "d1-village", dayId: "2026-11-25" },
+  { id: "d1-paralleles", dayId: "2026-11-25" },
+  { id: "d1-networking", dayId: "2026-11-25" },
+  { id: "d1-pleniere-2030", dayId: "2026-11-25" },
+  { id: "d1-challenges", dayId: "2026-11-25" },
+  { id: "d2-morning", dayId: "2026-11-26" },
+  { id: "d2-pleniere-createur", dayId: "2026-11-26" },
+  { id: "d2-academy", dayId: "2026-11-26" },
+  { id: "d2-permanentes", dayId: "2026-11-26" },
+  { id: "d2-demo-show", dayId: "2026-11-26" },
+  { id: "d2-b2b", dayId: "2026-11-26" },
+  { id: "d2-after-party", dayId: "2026-11-26" },
+  { id: "d3-morning", dayId: "2026-11-27" },
+  { id: "d3-village-rencontres", dayId: "2026-11-27" },
+  { id: "d3-grand-pitch", dayId: "2026-11-27" },
+  { id: "d3-session-2000-idees", dayId: "2026-11-27" },
+  { id: "d3-cloture", dayId: "2026-11-27" },
+  { id: "d3-innovators-night", dayId: "2026-11-27" },
+] as const;
+
+export const PARTICIPANT_ACTIVITY_IDS = PARTICIPANT_ACTIVITIES.map((activity) => activity.id);
+
 export const VOLUNTEER_MOTIVATION_MAX_WORDS = 150;
 
 export function countWords(text: string): number {
