@@ -45,6 +45,7 @@ import {
   VolunteerApplicationRecord,
 } from "../http/models";
 import { ApplicationsService } from "./applications.service";
+import { assertCampaignOpen } from "../campaign";
 import {
   CommitteeApplicationDto,
   ListQueryDto,
@@ -124,6 +125,15 @@ export class ApplicationsController {
   @ApiCreatedData(ParticipantRegistrationRecord, "Inscription participant enregistrée.")
   createParticipant(@Body() body: ParticipantRegistrationDto) {
     return this.applications.createParticipant(body);
+  }
+
+
+  @Post("applications/participant/:id/badge")
+  @ApiTags("Inscriptions")
+  @ApiOperation({ summary: "Autoriser la génération du badge participant jusqu’au 20 novembre 2026 à 23h59" })
+  generateParticipantBadge(@Param("id") id: string) {
+    assertCampaignOpen("badge");
+    return this.applications.getParticipantForBadge(id);
   }
 
   @Post("applications/volunteer")
