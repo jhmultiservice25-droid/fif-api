@@ -7,26 +7,17 @@ import {
   Post,
   Query,
   Res,
-  UploadedFile,
-  UseInterceptors,
-  BadRequestException,
 } from "@nestjs/common";
-import { FileInterceptor } from "@nestjs/platform-express";
 import {
   ApiBody,
-  ApiConsumes,
   ApiExtraModels,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiProduces,
   ApiTags,
-  getSchemaPath,
 } from "@nestjs/swagger";
 import type { Response } from "express";
-import { diskStorage } from "multer";
-import { randomUUID } from "node:crypto";
-import { extname, join } from "node:path";
 import { AdminAuth } from "../auth/admin-auth";
 import {
   ApiCreatedData,
@@ -54,8 +45,6 @@ import {
   VolunteerApplicationDto,
 } from "./dto";
 
-const uploadDir = process.env.UPLOAD_DIR ?? "./data/uploads";
-
 @Controller()
 @ApiStandardErrors()
 @ApiExtraModels(
@@ -69,53 +58,13 @@ export class ApplicationsController {
 
   @Post("applications/committee")
   @ApiTags("Candidatures")
-  @ApiOperation({ summary: "Déposer une candidature comité (CV PDF obligatoire)" })
-  @ApiConsumes("multipart/form-data")
-  @ApiBody({
-    schema: {
-      allOf: [
-        { $ref: getSchemaPath(CommitteeApplicationDto) },
-        {
-          type: "object",
-          required: ["cv"],
-          properties: {
-            cv: {
-              type: "string",
-              format: "binary",
-              description: "CV au format PDF, 5 Mo maximum.",
-            },
-          },
-        },
-      ],
-    },
-  })
+  @ApiOperation({ summary: "Déposer une candidature comité" })
+  @ApiBody({ type: CommitteeApplicationDto })
   @ApiCreatedData(CommitteeApplicationRecord, "Candidature comité enregistrée.")
-  @UseInterceptors(
-    FileInterceptor("cv", {
-      storage: diskStorage({
-        destination: uploadDir,
-        filename: (_req, file, cb) => {
-          cb(null, `${randomUUID()}${extname(file.originalname).toLowerCase()}`);
-        },
-      }),
-      limits: { fileSize: 5 * 1024 * 1024 },
-      fileFilter: (_req, file, cb) => {
-        if (file.mimetype !== "application/pdf" && !file.originalname.toLowerCase().endsWith(".pdf")) {
-          cb(new BadRequestException("Le CV doit être un PDF."), false);
-          return;
-        }
-        cb(null, true);
-      },
-    }),
-  )
-  createCommittee(
-    @Body() body: CommitteeApplicationDto,
-    @UploadedFile() file: Express.Multer.File | undefined,
-  ) {
-    if (!file) {
-      throw new BadRequestException("Le CV PDF est obligatoire.");
-    }
-    return this.applications.createCommittee(body, join(uploadDir, file.filename));
+  createCommittee(@Body() body: CommitteeApplicationDto) {
+    // Le champ historique cvPath reste en base pour compatibilité avec les anciennes candidatures,
+    // mais aucun CV n'est désormais demandé aux nouveaux candidats.
+    return this.applications.createCommittee(body, "");
   }
 
   @Post("applications/participant")
@@ -126,8 +75,6 @@ export class ApplicationsController {
   createParticipant(@Body() body: ParticipantRegistrationDto) {
     return this.applications.createParticipant(body);
   }
-
-
 
   @Get("applications/participant/:id/verify")
   @ApiTags("Inscriptions")
