@@ -4,12 +4,49 @@ export type AppAuth = Awaited<ReturnType<typeof createAuth>>;
 
 export const AUTH = Symbol("AUTH");
 
+async function sendEmailVerificationOtp(email: string, otp: string) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.FIKIRI_EMAIL_FROM;
+
+  if (!apiKey || !from) {
+    throw new Error("RESEND_API_KEY and FIKIRI_EMAIL_FROM are required for email verification.");
+  }
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from,
+      to: [email],
+      subject: "Votre code de confirmation FIKIRI",
+      html: `
+        <div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;padding:24px;color:#111827">
+          <h2 style="margin:0 0 16px">Confirmation de votre adresse e-mail</h2>
+          <p>Utilisez le code suivant pour confirmer votre compte FIKIRI Innovation Festival :</p>
+          <div style="font-size:32px;font-weight:700;letter-spacing:8px;margin:24px 0">${otp}</div>
+          <p>Ce code expire dans 5 minutes.</p>
+          <p style="color:#6b7280;font-size:13px">Si vous n’êtes pas à l’origine de cette demande, ignorez cet e-mail.</p>
+        </div>
+      `,
+    }),
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(`Resend email delivery failed (${response.status}): ${body}`);
+  }
+}
+
 /**
  * Better Auth is ESM. Nest compiles to CJS, so this factory uses dynamic import.
  */
 export async function createAuth(prisma: PrismaClient) {
   const { betterAuth } = await import("better-auth");
   const { prismaAdapter } = await import("better-auth/adapters/prisma");
+  const { emailOTP } = await import("better-auth/plugins");
 
   const secret = process.env.BETTER_AUTH_SECRET;
   if (!secret) {
@@ -30,7 +67,22 @@ export async function createAuth(prisma: PrismaClient) {
       enabled: true,
       disableSignUp: true,
       minPasswordLength: 8,
+      requireEmailVerification: true,
     },
+    plugins: [
+      emailOTP({
+        otpLength: 6,
+        expiresIn: 300,
+        allowedAttempts: 5,
+        storeOTP: "hashed",
+        async sendVerificationOTP({ email, otp, type }) {
+          if (type !== "email-verification") {
+            throw new Error("Only email verification OTP is enabled.");
+          }
+          await sendEmailVerificationOtp(email, otp);
+        },
+      }),
+    ],
     session: {
       expiresIn: 60 * 60 * 12,
       cookieCache: {
