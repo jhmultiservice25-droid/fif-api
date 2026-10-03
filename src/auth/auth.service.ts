@@ -26,7 +26,7 @@ export class AuthService implements OnModuleInit {
       {
         email: normalized,
         name: name.trim(),
-        emailVerified: true,
+        emailVerified: false,
       },
       { method: "email-password" },
     );
@@ -51,6 +51,13 @@ export class AuthService implements OnModuleInit {
         data: { userId: user.id, displayName: name.trim(), email: normalized },
       });
     }
+
+    await this.auth.api.sendVerificationOTP({
+      body: {
+        email: normalized,
+        type: "email-verification",
+      },
+    });
 
     return { id: user.id, email: normalized, name: name.trim(), role };
   }
